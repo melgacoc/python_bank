@@ -45,4 +45,4 @@ def authenticate_user(username, password):
 
 
 def get_users():
-    return User.objects.values('id', 'username', 'password')
+    return User.objects.values('id', 'username')
