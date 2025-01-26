@@ -35,6 +35,15 @@ class UserViewTests(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+    def test_register_existing_user(self):
+        """Testa o registro de usuário com usuário existente."""
+        url = '/api/register/'
+        response = self.client.post(url, self.user_data, format='json')
+
+        print(response.data)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
     def test_login_user(self):
         """Testa o endpoint de login de usuário."""
         url = '/api/login/'
@@ -47,6 +56,34 @@ class UserViewTests(TestCase):
         print(response.data)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_login_incorrect_credentials(self):
+        """Testa o endpoint de login de usuário com credenciais incorretas."""
+        url = '/api/login/'
+        data = {
+            "username": self.user_data['username'],
+            "password": "senhaerrada"
+        }
+        response = self.client.post(url, data, format='json')
+
+        print(response.data)
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_register_user_invalid_fields(self):
+        """Testa o endpoint de registro de usuário com campos incorretos."""
+        url = '/api/register/'
+        data = {
+            "username": "",
+            "password": "novasenha123",
+            "email": "emailinvalido",
+            "cpf": "123"
+        }
+        response = self.client.post(url, data, format='json')
+
+        print(response.data)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_get_users_view(self):
         """Testa o endpoint para listar usuários com autenticação."""

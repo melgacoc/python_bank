@@ -1,6 +1,7 @@
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.exceptions import NotFound
 from bank.services.transaction_service import (
     transfer_funds,
     get_balance,
@@ -24,6 +25,8 @@ def transfer(request):
             "new_balance": get_balance(sender_user)
         }
         return Response(response_data)
+    except NotFound as e:
+        return Response({"error": str(e)}, status=404)
     except ValueError as e:
         return Response({"error": str(e)}, status=400)
 

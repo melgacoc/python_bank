@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model
 from rest_framework.exceptions import ValidationError
 from django.contrib.auth.hashers import make_password, check_password
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.exceptions import AuthenticationFailed
 
 User = get_user_model()
 
@@ -36,9 +37,9 @@ def authenticate_user(username, password):
     try:
         user = get_user_model().objects.get(username=username)
         if not check_password(password, user.password):
-            raise ValidationError("Usuário ou senha inválidos.")
+            raise AuthenticationFailed("Usuário ou senha inválidos.")
     except get_user_model().DoesNotExist:
-        raise ValidationError("Usuário ou senha inválidos.")
+        raise AuthenticationFailed("Usuário ou senha inválidos.")
 
     tokens = get_tokens_for_user(user)
     return user, tokens

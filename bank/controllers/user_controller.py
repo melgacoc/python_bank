@@ -1,6 +1,7 @@
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.exceptions import AuthenticationFailed
 from django.core.exceptions import ValidationError
 from bank.services.user_service import (
     create_user,
@@ -47,7 +48,7 @@ def login(request):
             "id": user.id,
             "token": tokens
         })
-    except ValidationError as e:
+    except AuthenticationFailed as e:
         return Response({"error": str(e)}, status=401)
 
 

@@ -3,8 +3,8 @@ from django.utils.dateparse import parse_date
 from bank.models import Wallet, Transaction
 from decimal import Decimal
 from datetime import datetime, time
-# from django.utils import timezone
 from django.utils.timezone import make_aware, is_naive
+from rest_framework.exceptions import NotFound
 
 
 def transfer_funds(sender_user, receiver_username, amount):
@@ -18,38 +18,16 @@ def transfer_funds(sender_user, receiver_username, amount):
         sender_wallet = Wallet.objects.select_for_update().get(
             user=sender_user
         )
-        receiver_wallet = Wallet.objects.select_for_update().get(
-            user__username=receiver_username
-        )
+        try:
+            receiver_wallet = Wallet.objects.select_for_update().get(
+                user__username=receiver_username
+            )
+        except Wallet.DoesNotExist:
+            raise NotFound("Usuário receptor não encontrado.")
 
         if sender_wallet.balance < amount:
             raise ValueError("Saldo insuficiente para realizar "
                              "a transferência.")
-
-        """"
-        last_transaction = Transaction.objects.filter(
-            sender=sender_wallet,
-            receiver=receiver_wallet
-        ).order_by().last()
-
-        if last_transaction:
-            now = timezone.now()
-
-            if last_transaction.timestamp.tzinfo is None:
-                last_transaction.timestamp = make_aware(
-                    last_transaction.timestamp
-                )
-
-            time_difference = now - last_transaction.timestamp
-
-            if (
-                last_transaction.receiver == receiver_wallet and
-                last_transaction.amount == amount and
-                time_difference.total_seconds() < 60
-            ):
-                raise ValueError("Transação duplicada detectada. "
-                                 "Aguarde antes de tentar novamente.")
-        """
 
         sender_wallet.balance -= amount
         receiver_wallet.balance += amount
