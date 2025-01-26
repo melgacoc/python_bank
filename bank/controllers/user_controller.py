@@ -53,6 +53,6 @@ def login(request):
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def get_users_view(request):
+def get_all_users(request):
     users = get_users()
     return Response({"users": users})

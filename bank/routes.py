@@ -1,5 +1,5 @@
 from django.urls import path
-from bank.controllers.user_controller import register, get_users_view, login
+from bank.controllers.user_controller import register, get_all_users, login
 from bank.controllers.transaction_controller import (
     transfer,
     check_balance,
@@ -10,7 +10,7 @@ from bank.controllers.transaction_controller import (
 urlpatterns = [
     path('register/', register, name='register'),
     path('login/', login, name='login'),
-    path('users/', get_users_view, name='get_users'),
+    path('users/', get_all_users, name='get_users'),
     path('add-funds/', add_funds_to_wallet, name='add_funds'),
     path('transfer/', transfer, name='transfer'),
     path('balance/', check_balance, name='balance'),
